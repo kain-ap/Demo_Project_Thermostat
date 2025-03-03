@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>ThermostatModel1</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+        <meta name="generator" content="FreeCAD 1.0.0">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                background: #ffffff; /* Old browsers */
+                background: -moz-linear-gradient(top, #e3e9fc 0%, #ffffff 70%, #e2dab3 100%); /* FF3.6-15 */
+                background: -webkit-linear-gradient(top, #e3e9fc 0%,#ffffff 70%,#e2dab3 100%); /* Chrome10-25, Safari5.1-6 */
+                background: linear-gradient(to bottom, #e3e9fc 0%,#ffffff 70%,#e2dab3 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                width: 100vw;
+                height: 100vh;
+            }
+            canvas { display: block; }
+            #mainCanvas {
+                width: 100%;
+                height: 100%;
+            }
+            #arrowCanvas  {
+                position: absolute;
+                left: 0px;
+                bottom: 0px;
+                width: 150px;
+                height: 150px;
+                z-index: 100;
+            }
+            select { width: 170px; }
+        </style>
+    </head>
+    <body>
+        <canvas id="mainCanvas"></canvas>
+        <canvas id="arrowCanvas"></canvas>
+        <script type="module">
+            // Direct from mrdoob: https://www.jsdelivr.com/package/npm/three
+            import * as THREE from            'https://cdn.jsdelivr.net/npm/three@0.125.0/build/three.module.js';
+            import { OrbitControls } from     'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/controls/OrbitControls.js';
+            import { GUI } from               'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/libs/dat.gui.module.js';
+            import { Line2 } from             'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/Line2.js';
+            import { LineMaterial } from      'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/LineMaterial.js';
+            import { LineGeometry } from      'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/lines/LineGeometry.js';
+            import { EdgeSplitModifier } from 'https://cdn.jsdelivr.net/npm/three@0.125.0/examples/jsm/modifiers/EdgeSplitModifier.js';
+
+            const data = {"camera":{"type":"Perspective","focalDistance":149.82052612304688,"position_x":46.362030029296875,"position_y":-55.5691032409668,"position_z":132.30828857421875},"file":{},"objects":[{"name":"ThermostatBody","color":"#7f7f7f","opacity":1.0,"verts":"1aaaaacabaabcbacbaabbabbc","facets":"1abccbdefgeghfeaaebhgchcdcgaagfhdbhbe","wires":["1abcabaaaaaacabc","1bbcbbabaabacbbc","1bacaacaaabaabac","1bbcabcababbabbc","1bbabaaaaaababba","1bbcbacaacabcbbc"],"faceColors":[],"facesToFacets":["1ab","1cd","1ef","1gh","1ij","1kl"],"floats":"RaTuH5reVHKvE4Uv"},{"name":"IncreaseButton","color":"#00ff00","opacity":1.0,"verts":"2 ( ) d a b d a b c ( ) c * + d * + c - : c - : d ; / d ; / c = > c = > d ? @ d ? @ c [ ] c [ ] d ^ _ d ^ _ c , . d , . c { | c { | d } ~ c } ~ d `ab d `ab cbbcb dbbcb cdbeb ddbeb cfbgb dfbgb chbib dhbib cjbkb djbkb clbmb dlbmb cnbob cnbob dpbqb dpbqb crbsb drbsb ctbub ctbub dvbwb dvbwb cxbyb dxbyb czbAb dzbAb cBbCb dBbCb cDbEb cDbEb dFbGb cFbGb dHbIb cHbIb dJbKb dJbKb cLbMb dLbMb cNbOb cNbOb dPbQb cPbQb dRbSb dRbSb cTbUb cTbUb dVbWb dVbWb cXbYb dXbYb cZb1b dZb1b c2b3b d2b3b c4b5b d4b5b c6b7b d6b7b c8b9b d8b9b c0b!b d0b!b c#b$b d#b$b c%b&b d%b&b c(b)b c(b)b d*b+b c*b+b d-b:b c-b:b d;b/b d;b/b c=b>b d=b>b c?b@b d?b@b c[b]b d[b]b c^b_b d^b_b c,b.b d,b.b c{b|b d{b|b c}b~b d}b~b c}b`b d}b`b c{bac d{bac c,bbc d,bbc c^bcc d^bcc c[bdc d[bdc c?bec d?bec c=bfc d=bfc c;bgc d;bgc c-bhc d-bhc c*bic d*bic c(bjc d(bjc c%bkc d%bkc c#blc c#blc d0bmc d0bmc c8bnc c8bnc d6boc d6boc c4bpc d4bpc c2bqc d2bqc cZbrc cZbrc dXbsc dXbsc cVbtc dVbtc cTbuc dTbuc cRbvc cRbvc dPbwc cPbwc dNbxc dNbxc cLbyc dLbyc cJbzc dJbzc cHbAc cHbAc dFbBc dFbBc cDbCc dDbCc cBbDc cBbDc dzbEc czbEc dxbFc dxbFc cvbGc cvbGc dtbHc dtbHc crbIc crbIc dpbJc cpbJc dnbKc dnbKc clbLc clbLc djbMc cjbMc dhbNc dhbNc cfbOc dfbOc cdbPc ddbPc cbbQc cbbQc d `Rc d `Rc c }Sc c }Sc d {Tc d {Tc c ,Uc d ,Uc c ^Vc d ^Vc c [Wc d [Wc c ?Xc d ?Xc c =Yc c =Yc d ;Zc c ;Zc d -1c c -1c d *2c d *2c c (3c d (3c c","facets":"2 a b c a c d e d f e f g e a d h e g i g j i j k i h g l i k m k n m n o m l k p m o q o r q p o s r t s t u s q r v u w v s u x v w y w z y x w A z B A y z C B D C A B E D F E C D G F H G E F I H J I G H K J L K L M K I J N K M O N M O M P Q O P Q P R Q R S T Q S U T S U S V W U V W V X Y W X Y X Z 1 Y Z 1 Z 2 1 2 3 4 3 5 4 1 3 6 5 7 6 4 5 8 6 7 9 7 0 9 8 7 ! 0 # ! # $ ! 9 0 % $ & % ! $ ( % & ) & * ) * + ) ( & - ) + : + ; : - + / ; = / : ; > = ? > / = @ ? [ @ > ? ] [ ^ ] @ [ _ ^ , _ ] ^ . , { . _ , | { } | . { ~ | } ~ } `ab ~ `ab `bbabbbcbdbabcbdbcbebfbdbebfbebgbhbfbgbibhbgbibgbjbkbibjbkbjblbmbkblbmblbnbobmbnbobnbpbqbobpbqbpbrbsbqbrbsbrbtbubsbtbubtbvbwbubvbwbvbxbybwbxbybxbzbAbybzbAbzbBbCbAbBbCbBbDbEbCbDbEbDbFbGbEbFbGbFbHbIbHbJbIbGbHbKbJbLbKbIbJbMbLbNbMbKbLbObNbPbObMbNbQbPbRbQbObPbSbRbTbSbQbRbUbSbTbUbTbVbUbVbWbXbUbWbYbXbWbYbWbZbYbZb1b2bYb1b3b2b1b3b1b4b5b3b4b5b4b6b7b5b6b7b6b8b7b8b9b0b7b9b!b0b9b!b9b#b$b!b#b$b#b%b&b$b%b&b%b(b&b(b)b*b&b)b*b)b+b-b*b+b:b-b+b:b+b;b/b:b;b/b;b=b>b/b=b>b=b?b>b?b@b[b>b@b]b[b@b]b@b^b_b]b^b_b^b,b_b,b.b{b.b|b{b_b.b}b{b|b~b|b`b~b`bac~b}b|bbc~bacccacdcccdcecccbcacfcecgcfcccechcfcgcichcgcicgcjcicjckclcickclckcmcnclcmcocmcpcocncmcqcpcrcqcocpcscrctcsctcucscqcrcvcscucwcucxcwcxcycwcvcuczcwcycAcycBcAczcycCcBcDcCcAcBcEcDcFcEcCcDcGcFcHcGcEcFcIcHcJcIcJcKcIcGcHcLcKcMcLcIcKcNcMcOcNcLcMcPcNcOcQcOcRcQcPcOcScRcTcScQcRc bTc c bScTcUbXbYbUbYb2bSbUb2b0b5b7b$b5b0b$b3b5b$b0b!bMbObQb-b$b&b-b&b*bGbIbKbGbKbMb:bSb2b:b$b-b:b3b$b:bQbSb:b2b3bCbEbGb]b:b/b]b/b>b]b>b[bubGbMbubwbybubybAbubAbCbubCbGb}b_b{b~b:b]b~b_b}b~b]b_bobqbsbmbsbubmbobsbccMbQbccQb:bcc:b~bcc~bbcibkbmbibmbubicfchcfbhbiblcfciclcccfcdbfbibnccclcncMbccabdbib ~abib . ~ib . | ~vcMbncvcncocvcocqcvcqcsc @ ] _AcvcwcAcwczcAcMbvcAcubMb > @ _CcubAc / .ib / _ . / > _GcCcEc ) - :LcGcIc !ibub ! % ( ! ( ) ! : / ! /ib ! ) : bLcNc bNcPc bPcQc bQcSc bCcGc bGcLc aCc b 4 6 8 Y 1 4 Y 8 9 Y 9 ! Y 4 8 l a e l e h l h i lubCc lCc a T U W T W Y T Y ! p l m s p q v p s K T ! K N O K O Q K Q T xub l x p v x !ub x l p A x y E G I E I K C x A C K ! C ! x C E KWbVbZbZbVb1bVbTb1b6b9b8b6b%b9b4b%b6b9b%b#bPbNbRb%b+b(b(b+b)bJbHbLbLbHbNbTb;b1b%b;b+b4b;b%bRb;bTb1b;b4bFbDbHb;b^b=b=b^b?b?b^b@bHbvbNbxbvbzbzbvbBbBbvbDbDbvbHb,b|b.b;b`b^b,b`b|b^b`b,brbpbtbtbnbvbpbnbtbNbdcRbRbdc;b;bdc`b`bdcaclbjbnbnbjbvbecjcgcgbebjbeckcjcdckcecebcbjbdcmckcNbmcdccbbbjbbb `jb ` {jb } { `Nbucmcmcucpcpcucrcrcuctc ^ [ ,ucBcxcxcBcycNbBcucvbBcNb [ ? ,vbDcBc { =jb , = { ? = ,DcHcFc + * ;HcKcJcjb #vb $ # & & # * ; # = = #jb * # ;Kc cMcMc cOcOc cRcRc cTcDc cHcHc cKcDc d c 5 3 7 2 Z 3 7 Z 0 0 Z # 3 Z 7 d k f f k g g k jvb kDcDc k d V S X X S Z Z S # k o n o t r o u t S L # M L P P L R R L Svb w k o w u # wvb k w o w B z H F J J F L w D B L D # # D w F D L","wires":["1abcabdefdghdijdkldmndopdqrdstduvdwxdyzdABdCDdEFdGHdIJdKLdMNdOPdQRdSTdUVdWXdYZd12d34d56d78d90d!#d$%db&df%dh#dj0dl8dn6dp4dr2dtZdvXdxVdzTdBRdDPdFNdHLdJJdLHdNFdPDdRBdTzdVxdXvdZtd2rd4pd6nd8ld0jd#hd%fd&bd%$d#!d09d87d65d43d21dZYdXWdVUdTSdRQdPOdNMdLKdJIdHGdFEdDCdBAdzydxwdvudtsdrqdpodnmdlkdjidhgdfedbad$ed!gd9id7kd5md3od1qdYsdWudUwdSydQAdOCdMEdKGdIIdGKdEMdCOdAQdySdwUduWdsYdq1do3dm5dk7di9dg!de$dabd","1abde$dg!di9dk7dm5do3dq1dsYduWdwUdySdAQdCOdEMdGKdIIdKGdMEdOCdQAdSydUwdWudYsd1qd3od5md7kd9id!gd$edbadfedhgdjidlkdnmdpodrqdtsdvudxwdzydBAdDCdFEdHGdJIdLKdNMdPOdRQdTSdVUdXWdZYd21d43d65d87d09d#!d%$d&bd%fd#hd0jd8ld6nd4pd2rdZtdXvdVxdTzdRBdPDdNFdLHdJJdHLdFNdDPdBRdzTdxVdvXdtZdr2dp4dn6dl8dj0dh#df%db&d$%d!#d90d78d56d34d12dYZdWXdUVdSTdQRdOPdMNdKLdIJdGHdEFdCDdABdyzdwxduvdstdqrdopdmndkldijdghdefdabd","1abcefcghcijcklcmncopcqrcstcuvcwxcyzcABcCDcEFcGHcIJcKLcMNcOPcQRcSTcUVcWXcYZc12c34c56c78c90c!#c$%cb&cf%ch#cj0cl8cn6cp4cr2ctZcvXcxVczTcBRcDPcFNcHLcJJcLHcNFcPDcRBcTzcVxcXvcZtc2rc4pc6nc8lc0jc#hc%fc&bc%$c#!c09c87c65c43c21cZYcXWcVUcTScRQcPOcNMcLKcJIcHGcFEcDCcBAczycxwcvuctscrqcpocnmclkcjichgcfecbac$ec!gc9ic7kc5mc3oc1qcYscWucUwcSycQAcOCcMEcKGcIIcGKcEMcCOcAQcyScwUcuWcsYcq1co3cm5ck7ci9cg!ce$cabc"],"faceColors":[],"facesToFacets":["2 a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 1 2 3 4 5 6 7 8 9 0 ! # $ % & ( ) * + - : ; / = > ? @ [ ] ^ _ , . { | } ~ `abbbcbdbebfbgbhbibjbkblbmbnbobpbqbrbsbtbubvbwbxbybzbAbBbCbDbEbFbGbHbIbJbKbLbMbNbObPbQbRbSbTbUbVbWbXbYbZb1b2b3b4b5b6b7b8b9b0b!b#b$b%b&b(b)b*b+b-b:b;b/b=b>b?b@b[b]b^b_b,b.b{b|b}b~b`bacbcccdcecfcgchcicjckclcmcncocpcqcrcsctcucvcwcxcyczcAcBcCcDcEcFcGcHcIcJcKcLcMcNcOcPcQcRcScTc","2UcVcWcXcYcZc1c2c3c4c5c6c7c8c9c0c!c#c$c%c&c(c)c*c+c-c:c;c/c=c>c?c@c[c]c^c_c,c.c{c|c}c~c`cadbdcdddedfdgdhdidjdkdldmdndodpdqdrdsdtdudvdwdxdydzdAdBdCdDdEdFdGdHdIdJdKdLdMdNdOdPdQdRdSdTdUdVdWdXdYdZd1d2d3d4d5d6d7d8d9d0d!d#d$d%d&d","2(d)d*d+d-d:d;d/d=d>d?d@d[d]d^d_d,d.d{d|d}d~d`daebecedeeefegeheiejekelemeneoepeqereseteuevewexeyezeAeBeCeDeEeFeGeHeIeJeKeLeMeNeOePeQeReSeTeUeVeWeXeYeZe1e2e3e4e5e6e7e8e9e0e!e#e$e%e&e(e)e*e+e-e:e;e/e=e>e?e@e[e]e^e_e,e.e{e|e}e"],"floats":"~MQY5unuf]Tvb0UvWU32Ti>de.g{,y_5.7nnmx^T/u+A(Ha8c2fMJMEV>0Vd:}f6rA03bEpmf9~XE[luj1E?Y4o)+q2;+b>dt!]V`9)?dv]k2T]SylKH.4r.bgK#vbiV%$OdMMR1:.C7eqIjw5|Xct4U%e0E#8&?IEX9kU:dcJ;+CvjXzk|k+1HS/GT&3?*-/zXN2pMO=lLd^WX,Czm:d7qn9}|W21u2`LaMHNs7&S[2a_)dU>g{d*w^9F,iN+?RKcx2*eSR}$QTrDIBt6Hd,$%Mc5A4}SFjO7NWVflu-[D{dS[.1h62T.0dJ50#UY#5A~8kj1>R7Ok;KgB5?@(vWU32Si>dX?tM[_)-teln##.VTO([Y~YyR@b>M?CVmE%dtgc_532zl9hk(W~XGCJHtHT*i}S!+#PB=`=dDU_Wi[D4;Kmk~,{WclKHFOk%m6l#MlbV5b*dK3Ox$h1M3$6i+(QXm86UQB_+%x06S5YOIN:d-!KW[$ox6g}i.iRXwjT&c`q-:grygZaIl.=d7Ft%gyT8J?ak/R{W+,6Uu@0P{1t..@sVKP%d{=L>t`fw=pPk39~X&;S&m`YyPW1?[/=uKh>d#K27-{6KW*inHn.VT.6UTJY:g:.y*~GV}=Vd;}f6(O^,!%@kwr`XG8v2^j6>,Ms,50=;3g>d_J)(QDM,UJOm;qJTDDou-NH$15QF0ovV[;Odhv.Xt7HX_6ZlL$}X)3luTaEw#@{Mdn_&4_=d1gQy-oX0(omnBGIS;86UL)/4IPS5@d3O%pLd+2;+#+FC_|ajmBPX5r$[a4l:BeD{PN,2U`)d,ygEACr=6l^kT~?RORbO8A^0WXFXMP(Hi7Hd9[MwsAD%13Lj[NOWbIQ&vEq7_D3Kze62%~0dg8V_}:o1.F!l!Y>R^Ok;Z7.#%#1vRVXuL?Vd+._vBir>QD/j({[TlsR&?S@G85)1GlY;+/Od@h=-J+4K*X4k1=@SNb?8C$V!:0(:zLO9MqLd7uW40b>x8UIiA=@Rs03U/Vb&&N#7xl+2N7Hdnt|xjKA5]zgjH;>RJflud+o>[89wW332m1HdKE}ZEjqD@^Li~!>R.?GH2?A[}xDJwr$278HdRvI/A=XFb/Tl14@Rj[GHGId%|a@CLeE9wsLd>4eDWVz_v}@mnW@S,b?8(I.zc#y0f-p(gqSdf!0#S*U!zbNlKLKT[Gj;qBt{:YvYXJH]"},{"name":"DecreaseButton","color":"#ff0000","opacity":1.0,"verts":"2ObPb c a b c a b bObPb bQbRb cQbRb bSbTb bSbTb cUbVb cUbVb bWbXb bWbXb cYbZb cYbZb b1b2b b1b2b c3b4b c3b4b b5b6b c5b6b b7b8b b7b8b c9b0b b9b0b c!b#b c!b#b b$b%b c$b%b b&b(b c&b(b b)b*b c)b*b b+b-b c+b-b b:b;b c:b;b b/b=b c/b=b b>b?b b>b?b c@b[b c@b[b b]b^b c]b^b b_b,b b_b,b c.b{b c.b{b b|b}b c|b}b b~b`b c~b`b bacbc cacbc bccdc bccdc cecfc becfc cgchc bgchc cicjc cicjc bkclc ckclc bmcnc bmcnc cocpc bocpc cqcrc cqcrc bsctc bsctc cucvc cucvc bwcxc cwcxc byczc cyczc bAcBc cAcBc bCcDc cCcDc bEcFc cEcFc bGcHc cGcHc bIcJc cIcJc bKcLc cKcLc bMcNc cMcNc bOcPc bOcPc cQcRc bQcRc cScTc bScTc cUcVc cUcVc bWcXc cWcXc bYcZc cYcZc b1c2c c1c2c b3c4c c3c4c b5c6c c5c6c b7c8c c7c8c b9c0c c9c0c b9c!c c9c!c b7c#c c7c#c b5c$c c5c$c b3c%c c3c%c b1c&c c1c&c bYc(c cYc(c bWc)c cWc)c bUc*c cUc*c bSc+c cSc+c bQc-c cQc-c bOc:c cOc:c bMc;c cMc;c bKc/c bKc/c cIc=c cIc=c bGc>c bGc>c cEc?c cEc?c bCc@c cCc@c bAc[c cAc[c byc]c byc]c cwc^c cwc^c buc_c cuc_c bsc,c csc,c bqc.c bqc.c coc{c boc{c cmc|c cmc|c bkc}c ckc}c bic~c cic~c bgc`c bgc`c cecad cecad bccbd cccbd baccd baccd c~bdd b~bdd c|bed c|bed b.bfd b.bfd c_bgd c_bgd b]bhd b]bhd c@bid b@bid c>bjd c>bjd b/bkd b/bkd c:bld b:bld c+bmd c+bmd b)bnd c)bnd b&bod c&bod b$bpd b$bpd c!bqd c!bqd b9brd b9brd c7bsd c7bsd b5btd c5btd b3bud c3bud b1bvd c1bvd bYbwd cYbwd bWbxd bWbxd cUbyd bUbyd cSbzd bSbzd cQbAd cQbAd bObBd cObBd b","facets":"2 a b c a c d e d f e f g e a d h e g i g j i j k i h g l i k m k n m n o m l k p m o q o r q p o s r t s t u s q r v u w v s u x v w y w z y x w A z B A y z C B D C A B E D F E C D G F H G E F I H J I G H K J L K L M K I J N K M O N M O M P Q O P Q P R Q R S T Q S U T S U S V W U V W V X Y W X Y X Z 1 Y Z 1 Z 2 1 2 3 4 3 5 4 1 3 6 5 7 6 4 5 8 6 7 9 7 0 9 8 7 ! 0 # ! # $ ! 9 0 % $ & % ! $ ( % & ) & * ) * + ) ( & - ) + : + ; : - + / ; = / : ; > = ? > / = @ ? [ @ > ? ] [ ^ ] @ [ _ ^ , _ ] ^ . , { . _ , | { } | . { ~ | } ~ } `ab ~ `ab `bbabbbcbdbabcbdbcbebfbdbebfbebgbhbfbgbibhbgbibgbjbkbibjbkbjblbmbkblbmblbnbobmbnbobnbpbqbobpbqbpbrbsbqbrbsbrbtbubsbtbubtbvbwbubvbwbvbxbybwbxbybxbzbAbybzbAbzbBbCbAbBbCbBbDbEbCbDbEbDbFbGbEbFbGbFbHbIbHbJbIbGbHbKbJbLbKbIbJbMbLbNbMbKbLbObNbPbObMbNbQbPbRbQbObPbSbRbTbSbQbRbUbSbTbUbTbVbUbVbWbXbUbWbYbXbWbYbWbZbYbZb1b2bYb1b3b2b1b3b1b4b5b3b4b5b4b6b7b5b6b7b6b8b7b8b9b0b7b9b!b0b9b!b9b#b$b!b#b$b#b%b&b$b%b&b%b(b&b(b)b*b&b)b*b)b+b-b*b+b:b-b+b:b+b;b/b:b;b/b;b=b>b/b=b>b=b?b>b?b@b[b>b@b]b[b@b]b@b^b_b]b^b_b^b,b_b,b.b{b.b|b{b_b.b}b{b|b~b|b`b~b`bac~b}b|bbc~bacccacdcccdcecccbcacfcecgcfcccechcfcgcichcgcicgcjcicjckclcickclckcmcnclcmcocmcpcocncmcqcpcrcqcocpcscrctcsctcucscqcrcvcscucwcucxcwcxcycwcvcuczcwcycAcycBcAczcycCcBcDcCcAcBcEcDcFcEcCcDcGcFcHcGcEcFcIcHcJcIcJcKcIcGcHcLcKcMcLcIcKcNcMcOcNcLcMcPcNcOcQcOcRcQcPcOcScRcTcScQcRc bTc c bScTcSbUbXbSbXbYbSbYb2b0b5b7bQbSb2b$b5b0b$b3b5b$b0b!bMbObQb-b&b*bGbIbKbGbKbMb:b&b-b:b$b&bCbEbGb>b:b/bybAbCb]b3b$b]b$b:b]b:b>b]b2b3b]b>b[b_bQb2b_b2b]bubybCbubwbyb{bQb_b}bQb{bobqbsbmbsbubmbCbGbmbubCbmbobsbccMbQbccQb}bcc}b~bcc~bbchbibkbhbkbmbhbmbGblcccfclcfchclchcic ~hbGb ~GbMb ~abdb ~dbfb ~fbhb | ~Mb . |Mbvccclcvclcncvcncocvcocqcvcqcscwcccvc ] _ .zcccwc @ ] . / > @GczcAcGcAcCcGcCcEcGccczcGcMbcc - : / - / @LcGcIc % ( ) ! % )QcLcNcQcNcPcQcGcLc 8 9 ! aSc b 1 4 6 1 6 8 i a e i e h iQcSc iSc a W Y 1 W 1 8 l .Mb lMbGc lGcQc lQc i m @ . m . l T U W p @ m s p q s @ p N O Q K W 8 K T W K N Q K Q T K 8 ! x s v x @ s A x y E G I E I K C @ x C K ! C x A C E K C ) - C - @ C ! )VbTbWbWbTbZbZbTb1b6b9b8bTbRb1b6b%b9b4b%b6b9b%b#bPbNbRb(b+b)bJbHbLbLbHbNb(b;b+b%b;b(bFbDbHb;b?b=bBbzbDb4b^b%b%b^b;b;b^b?b1b^b4b?b^b@bRb,b1b1b,b^bzbvbDbxbvbzbRb.b,bRb|b.brbpbtbtbnbvbDbnbHbvbnbDbpbnbtbNbdcRbRbdc|b|bdc`b`bdcacjbgblblbgbnbnbgbHbdckcececkcgcgckcjcgb `HbHb `Nbbb `cbcb `ebeb `gb ` }Nb } {Nbdcuckckcucmcmcucpcpcucrcrcuctcdcxcuc , ^ {dcycxc ^ [ { ? = [ycHcBcBcHcDcDcHcFcdcHcycNbHcdc ; + = = + [HcKcJc & $ * $ # *KcRcMcMcRcOcHcRcKc 0 7 #Tc d c 3 2 5 5 2 7 d j f f j gRc jTcTc j d Z X 2 2 X 7 { kNbNb kHcHc kRcRc k j [ n { { n k V S X [ o n o t r [ t o P M R X L 7 S L X M L R R L S 7 L # t w u [ w t w B z H F J J F L [ D w L D # w D B F D L * D + + D [ # D *","wires":["2 a b b a b c d e c f g c h i c j k c l m c n o c p q c r s c t u c v w c x y c z A c B C c D E c F G c H I c J K c L M c N O c P Q c R S c T U c V W c X Y c Z 1 c 2 3 c 4 5 c 6 7 c 8 9 c 0 ! c # $ c % & c ( $ c ) ! c * 9 c + 7 c - 5 c : 3 c ; 1 c / Y c = W c > U c ? S c @ Q c [ O c ] M c ^ K c _ I c , G c . E c { C c | A c } y c ~ w c ` u cab s cbb q ccb o cdb m ceb k cfb i cgb g chb e cib b chbjb cgbkb cfblb cebmb cdbnb ccbob cbbpb cabqb c `rb c ~sb c }tb c |ub c {vb c .wb c ,xb c _yb c ^zb c ]Ab c [Bb c @Cb c ?Db c >Eb c =Fb c /Gb c ;Hb c :Ib c -Jb c +Kb c *Lb c )Mb c (Nb c % c c #Nb c 0Mb c 8Lb c 6Kb c 4Jb c 2Ib c ZHb c XGb c VFb c TEb c RDb c PCb c NBb c LAb c Jzb c Hyb c Fxb c Dwb c Bvb c zub c xtb c vsb c trb c rqb c ppb c nob c lnb c jmb c hlb c fkb c djb c a b c","2 a b c djb c fkb c hlb c jmb c lnb c nob c ppb c rqb c trb c vsb c xtb c zub c Bvb c Dwb c Fxb c Hyb c Jzb c LAb c NBb c PCb c RDb c TEb c VFb c XGb c ZHb c 2Ib c 4Jb c 6Kb c 8Lb c 0Mb c #Nb c % c c (Nb c )Mb c *Lb c +Kb c -Jb c :Ib c ;Hb c /Gb c =Fb c >Eb c ?Db c @Cb c [Bb c ]Ab c ^zb c _yb c ,xb c .wb c {vb c |ub c }tb c ~sb c `rb cabqb cbbpb ccbob cdbnb cebmb cfblb cgbkb chbjb cib b chb e cgb g cfb i ceb k cdb m ccb o cbb q cab s c ` u c ~ w c } y c | A c { C c . E c , G c _ I c ^ K c ] M c [ O c @ Q c ? S c > U c = W c / Y c ; 1 c : 3 c - 5 c + 7 c * 9 c ) ! c ( $ c % & c # $ c 0 ! c 8 9 c 6 7 c 4 5 c 2 3 c Z 1 c X Y c V W c T U c R S c P Q c N O c L M c J K c H I c F G c D E c B C c z A c x y c v w c t u c r s c p q c n o c l m c j k c h i c f g c d e c a b c","2 a b b d e b f g b h i b j k b l m b n o b p q b r s b t u b v w b x y b z A b B C b D E b F G b H I b J K b L M b N O b P Q b R S b T U b V W b X Y b Z 1 b 2 3 b 4 5 b 6 7 b 8 9 b 0 ! b # $ b % & b ( $ b ) ! b * 9 b + 7 b - 5 b : 3 b ; 1 b / Y b = W b > U b ? S b @ Q b [ O b ] M b ^ K b _ I b , G b . E b { C b | A b } y b ~ w b ` u bab s bbb q bcb o bdb m beb k bfb i bgb g bhb e bib b bhbjb bgbkb bfblb bebmb bdbnb bcbob bbbpb babqb b `rb b ~sb b }tb b |ub b {vb b .wb b ,xb b _yb b ^zb b ]Ab b [Bb b @Cb b ?Db b >Eb b =Fb b /Gb b ;Hb b :Ib b -Jb b +Kb b *Lb b )Mb b (Nb b % c b #Nb b 0Mb b 8Lb b 6Kb b 4Jb b 2Ib b ZHb b XGb b VFb b TEb b RDb b PCb b NBb b LAb b Jzb b Hyb b Fxb b Dwb b Bvb b zub b xtb b vsb b trb b rqb b ppb b nob b lnb b jmb b hlb b fkb b djb b a b b"],"faceColors":[],"facesToFacets":["2 a b c d e f g h i j k l m n o p q r s t u v w x y z A B C D E F G H I J K L M N O P Q R S T U V W X Y Z 1 2 3 4 5 6 7 8 9 0 ! # $ % & ( ) * + - : ; / = > ? @ [ ] ^ _ , . { | } ~ `abbbcbdbebfbgbhbibjbkblbmbnbobpbqbrbsbtbubvbwbxbybzbAbBbCbDbEbFbGbHbIbJbKbLbMbNbObPbQbRbSbTbUbVbWbXbYbZb1b2b3b4b5b6b7b8b9b0b!b#b$b%b&b(b)b*b+b-b:b;b/b=b>b?b@b[b]b^b_b,b.b{b|b}b~b`bacbcccdcecfcgchcicjckclcmcncocpcqcrcsctcucvcwcxcyczcAcBcCcDcEcFcGcHcIcJcKcLcMcNcOcPcQcRcScTc","2UcVcWcXcYcZc1c2c3c4c5c6c7c8c9c0c!c#c$c%c&c(c)c*c+c-c:c;c/c=c>c?c@c[c]c^c_c,c.c{c|c}c~c`cadbdcdddedfdgdhdidjdkdldmdndodpdqdrdsdtdudvdwdxdydzdAdBdCdDdEdFdGdHdIdJdKdLdMdNdOdPdQdRdSdTdUdVdWdXdYdZd1d2d3d4d5d6d7d8d9d0d!d#d$d%d&d","2(d)d*d+d-d:d;d/d=d>d?d@d[d]d^d_d,d.d{d|d}d~d`daebecedeeefegeheiejekelemeneoepeqereseteuevewexeyezeAeBeCeDeEeFeGeHeIeJeKeLeMeNeOePeQeReSeTeUeVeWeXeYeZe1e2e3e4e5e6e7e8e9e0e!e#e$e%e&e(e)e*e+e-e:e;e/e=e>e?e@e[e]e^e_e,e.e{e|e}e"],"floats":"~MQY27cu+]Tve0Uvn@GVDRqg_&[8_oz8vqPA]fdnA.q]sh>d#mX_uJ&Y>Rd?bEpmf9~X`.AuuS27U%GzDCjQzvuV[:7f!Wl;gC[{oCF!a:EkD5i(y{=dB&q#qpS,$H}EeqIjw5|X&_&UW)U3G2:#h>;=kS6Oy97e/{*A#yz6>JP#Phck?bE9/J:dW0Z.>&*1kva{d7qn9}|W1.z2u=0#k>f)>AM)7[@HS8meV]&[,G&-msT/8>^m%y(2#O%dDuOY}6hKdm3Y}SFjO7NWPzquP)L>:21+YVEA0Z+uRule%dJHK#?va|;K1hQj/632]+0d#LLvk{Tvbe2+C|z]s&Vdya/RN*aLbEpm~SJT#ij;mzG6ag>zwsq(#)OdS&MwkVVNeqIj0w@S,EluK&2/3fH#)vK92oLd|r!K`*+Rd7qn,+@RL1u2wU]DV&t8x-+2,7HdcNm0l7u_}SFjh^>Rz93UtdU0}zuy|m42s1Hd!!Mw{4Uv1hQjT:gCW+4[zx5SbS[.3DsBe]rcy0^W`7!>8>^meYhD2La;9fm&FNs7XXdInVvcu{T3_K()Phck?Q3DQq^N(V-Z08&?eb`UUKCchG;Rt-:@a:EkszkEpxn2OHm,W4o)XYzV1XCctJhF)0Kx]fdnWRlEfYzH|LyU@h+{Mk3umi>d({dD>ma61l~m])hCKO([9kQ%KkwCk`AVQ@rcoysLn^_K/OQl2y~X0&yH^L1*~%x4_$-Hl}=d/EO@O=!{hOQjD_iD1t+A(]gS.Hi@kn%O=?yc0ndC=b=1YL/jFvQX~yzH#@]z8LAS2P6OQJ:die]VZn5>lU|m$`iExJ6Ud8z:fbmJDQ_HuOCcu}WC)|qEdy6ku7PWWfJ&!(k_~A}()CxVyK%dK*W,oY&@mVfjZqlE%>5U_*%?xH{^C+&u3ZCc7~b_Uv8Zw%rntI,V6(duiC%,1VT:N^GVi-VdQ40K*^e-sJNjALlEsB?8r&>1w@l[R_%;tXCc6po!|)cN%3bm^OIT-O^Nfc_G]D9^(IrV~)Od2^3G1zdH4CJkn3jEOkv2L%?0~-+DM-29KezcLJvNm[GY|[smr:HS(~m2d%/>&EYR!iVOqmLdtV.?{&Yw8#rnn/jDn+~NcH4=]!7+S@?2/Mvc#HOxtzl1y]1jI9?R7i8A]794J0UQ4ILBE5Hd8f1{2AsyI>`ie`ZC#Q>8N(@XsSM.V*42eLoc^g]//m>F9SHkbW>RKG]N`XL[vo)0,0/7QD/jDaj]D89f6W+U|o0!M9cHAMs+jXc**X4knW.&u/mfwxZ&B8U^KZA,Z);^m2.I8UIiHS.2ueneT[z2)u8IAlH)uBi1ovNL]zgjEt72hvleg@8UGc!#B%$Xp^!vH$jw@^LiB$52:Pleh$^81Oe5E&f[x=/vk9J4b/Tlj7^287ne2t{8LVA*=y:$:Pk[}*_%v}@mUZ]&e&nf)X>[O:h{7E@>b/+w]vWSzbNl?b;;R[og6F|AgxYCdcIJ"},{"name":"Screen","color":"#33b2ff","opacity":1.0,"verts":"1acaaccabaabcdccdcadbadbc","facets":"1abccbdefgeghfeaaebhgchcdcgaagfhdbhbe","wires":["1abcabaacaaccabc","1dbcdbadcadccdbc","1dccaccacadcadcc","1dbcabcabadbadbc","1dbadcaacaabadba","1dbcdccaccabcdbc"],"faceColors":[],"facesToFacets":["1ab","1cd","1ef","1gh","1ij","1kl"],"floats":"|VfCEflu+]Tve0UvRaTu"}],"compressed":true,"base":"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!#$%&()*+-:;/=>?@[]^_,.{|}~`","baseFloat":",.-0123456789"};
+
+            // Z is up for FreeCAD
+            THREE.Object3D.DefaultUp = new THREE.Vector3(0, 0, 1);
+
+            const defaultWireColor = new THREE.Color('rgb(0,0,0)');
+            const defaultWireLineWidth = 2; // in pixels
+
+            const raycasterObj = []; // list of obj that can mouseover highlight
+
+            const canvas = document.querySelector('#mainCanvas');
+
+            const scene = new THREE.Scene();
+
+            const renderer = new THREE.WebGLRenderer({
+                alpha: true,
+                antialias: true,
+                canvas: canvas
+            }); // Clear bg so we can set it with css
+            renderer.setClearColor(0x000000, 0);
+
+            let renderRequested = false;
+
+            // HemisphereLight gives different colors of light from the top
+            // and bottom simulating reflected light from the 'ground' and
+            // 'sky'
+            scene.add(new THREE.HemisphereLight(0xC7E8FF, 0xFFE3B3, 0.4));
+
+            const dLight1 = new THREE.DirectionalLight(0xffffff, 0.4);
+            dLight1.position.set(5, -2, 3);
+            scene.add(dLight1);
+            const dLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+            dLight2.position.set(-5, 2, 3);
+            scene.add(dLight2);
+
+            if (data.compressed) {
+                const base = data.base;
+                const baseFloat = data.baseFloat;
+
+                function baseDecode(input) {
+                    const baseCt = base.length;
+                    const output = [];
+                    const len = parseInt(input[0]); // num chars of each element
+                    for (let i = 1; i < input.length; i += len) {
+                        const str = input.substring(i, i + len).trim();
+                        let val = 0;
+                        for (let s = 0; s < str.length; s++) {
+                            const ind = base.indexOf(str[s]);
+                            val += ind * Math.pow(baseCt, s);
+                        }
+                        output.push(val);
+                    }
+                    return output;
+                }
+
+                function floatDecode(input) {
+                    const baseCt = base.length;
+                    const baseFloatCt = baseFloat.length;
+                    let numString = '';
+                    for (let i = 0; i < input.length; i += 4) {
+                        const b90chunk = input.substring(i, i + 4).trim();
+                        let quotient = 0;
+                        for (let s = 0; s < b90chunk.length; s++) {
+                            const ind = base.indexOf(b90chunk[s]);
+                            quotient += ind * Math.pow(baseCt, s);
+                        }
+                        let buffer = '';
+                        for (let s = 0; s < 7; s++) {
+                            buffer = baseFloat[quotient % baseFloatCt] + buffer;
+                            quotient = parseInt(quotient / baseFloatCt);
+                        }
+                        numString += buffer;
+                    }
+                    let trailingCommas = 0;
+                    for (let s = 1; s < 7; s++) {
+                        if (numString[numString.length - s] == baseFloat[0]) {
+                            trailingCommas++;
+                        }
+                    }
+                    numString = numString.substring(0, numString.length - trailingCommas);
+                    return numString;
+                }
+
+                // Decode from base90 and distribute the floats
+                for (const obj of data.objects) {
+                    obj.floats = JSON.parse('[' + floatDecode(obj.floats) + ']');
+                    obj.verts = baseDecode(obj.verts).map(x => obj.floats[x]);
+                    obj.facets = baseDecode(obj.facets);
+                    obj.wires = obj.wires.map(w => baseDecode(w).map(x => obj.floats[x]));
+                    obj.facesToFacets = obj.facesToFacets.map(x => baseDecode(x));
+                }
+            }
+
+            // Get bounds for global clipping
+            const globalMaxMin = [{min: null, max: null},
+                                  {min: null, max: null},
+                                  {min: null, max: null}];
+            for (const obj of data.objects) {
+                for (let v = 0; v < obj.verts.length; v++) {
+                    if (globalMaxMin[v % 3] === null
+                        || obj.verts[v] < globalMaxMin[v % 3].min) {
+                        globalMaxMin[v % 3].min = obj.verts[v];
+                    }
+                    if (globalMaxMin[v % 3] === null
+                        || obj.verts[v] > globalMaxMin[v % 3].max) {
+                        globalMaxMin[v % 3].max = obj.verts[v];
+                    }
+                }
+            }
+            let bigrange = 0;
+            // add a little extra
+            for (const i of globalMaxMin) {
+                const range = i.max - i.min;
+                if (range > bigrange) {
+                    bigrange = range;
+                }
+                i.min -= range * 0.01;
+                i.max += range * 0.01;
+            }
+
+            const camCenter = new THREE.Vector3(
+                0.5 * (globalMaxMin[0].max - globalMaxMin[0].min) + globalMaxMin[0].min,
+                0.5 * (globalMaxMin[1].max - globalMaxMin[1].min) + globalMaxMin[1].min,
+                0.5 * (globalMaxMin[2].max - globalMaxMin[2].min) + globalMaxMin[2].min );
+            const viewSize = 1.5 * bigrange; // make the view area a little bigger than the object
+            const aspectRatio = canvas.clientWidth / canvas.clientHeight;
+            const originalAspect = aspectRatio;
+
+            function initCam(camera) {
+                // XXX this needs to treat the perspective and orthographic
+                // cameras differently
+                camera.position.set(
+                    data.camera.position_x,
+                    data.camera.position_y,
+                    data.camera.position_z);
+                camera.lookAt(camCenter);
+                camera.updateMatrixWorld();
+            }
+
+            let cameraType = data.camera.type;
+            const persCamera = new THREE.PerspectiveCamera(
+                50, aspectRatio, 1, 100000);
+            initCam(persCamera);
+            const orthCamera = new THREE.OrthographicCamera(
+                -aspectRatio * viewSize / 2, aspectRatio * viewSize / 2,
+                viewSize / 2, -viewSize / 2, -100000, 100000);
+            initCam(orthCamera);
+
+            function assignMesh(positions, color, opacity, faces) {
+                const baseGeometry = new THREE.BufferGeometry();
+                baseGeometry.setAttribute('position', new THREE.BufferAttribute(
+                    positions, 3));
+
+                // EdgeSplitModifier is used to combine verts so that smoothing normals can be generated WITHOUT removing the hard edges of the design
+                // REF: https://threejs.org/examples/?q=edge#webgl_modifier_edgesplit - https://github.com/mrdoob/three.js/pull/20535
+                const edgeSplit = new EdgeSplitModifier();
+                const cutOffAngle = 20;
+                const geometry = edgeSplit.modify(
+                    baseGeometry, cutOffAngle * Math.PI / 180);
+                geometry.computeVertexNormals();
+                geometry.computeBoundingSphere();
+
+                const material = new THREE.MeshLambertMaterial({
+                    color: color,
+                    side: THREE.DoubleSide,
+                    vertexColors: false,
+                    flatShading: false,
+                    opacity: opacity,
+                    transparent: opacity != 1.0,
+                    fog: false
+                });
+
+                const meshobj = new THREE.Mesh(geometry, material);
+                meshobj.name = meshobj.uuid;
+                faces.push(meshobj.uuid);
+                scene.add(meshobj);
+                raycasterObj.push(meshobj);
+            }
+
+            const objects = [];
+            for (const obj of data.objects) {
+                // Each face gets its own material because they each can
+                // have different colors
+                const faces = [];
+                if (obj.facesToFacets.length > 0) {
+                    for (let f=0; f < obj.facesToFacets.length; f++) {
+                        const facecolor = obj.faceColors.length > 0 ? obj.faceColors[f] : obj.color;
+                        const positions = new Float32Array(obj.facesToFacets[f].length * 9);
+                        for (let a=0; a < obj.facesToFacets[f].length; a++) {
+                            for (let b=0; b < 3; b++) {
+                                for (let c=0; c < 3; c++) {
+                                    positions[9 * a + 3 * b + c] = obj.verts[3 * obj.facets[3 * obj.facesToFacets[f][a] + b ] + c ];
+                                }
+                            }
+                        }
+                        assignMesh(positions, facecolor, obj.opacity, faces);
+                    }
+                } else {
+                    // No facesToFacets means that there was a tessellate()
+                    // mismatch inside FreeCAD. Use all facets in object to
+                    // create this mesh
+                    const positions = new Float32Array(obj.facets.length * 3);
+                    for (let a=0; a < obj.facets.length; a++) {
+                        for (let b=0; b < 3; b++) {
+                            positions[3 * a + b] = obj.verts[3 * obj.facets[a] + b];
+                        }
+                    }
+                    assignMesh(positions, obj.color, obj.opacity, faces);
+                }
+
+                // Wires
+                // cannot have lines in WebGL that are wider than 1px due to browser limitations so Line2 workaround lib is used
+                // REF: https://threejs.org/examples/?q=fat#webgl_lines_fat - https://jsfiddle.net/brLk6aud/1/
+                // This material is shared by all wires in this object
+                const wirematerial = new LineMaterial( {
+                    color: defaultWireColor,
+                    linewidth: defaultWireLineWidth,
+                    dashed: false, dashSize: 1, gapSize: 1, dashScale: 3
+                } );
+                wirematerial.resolution.set(
+                    canvas.clientWidth * window.devicePixelRatio,
+                    canvas.clientHeight * window.devicePixelRatio);
+
+                const wires = [];
+                for (const w of obj.wires) {
+                    const wiregeometry = new LineGeometry();
+                    wiregeometry.setPositions(w);
+                    const wire = new Line2(wiregeometry, wirematerial);
+                    wire.computeLineDistances();
+                    wire.scale.set(1, 1, 1);
+                    wire.name = wire.uuid;
+                    scene.add(wire);
+                    wires.push(wire.name);
+                }
+                objects.push({
+                    data: obj,
+                    faces: faces,
+                    wires: wires,
+                    wirematerial: wirematerial
+                });
+            }
+
+            // ---- GUI Init ----
+            const gui = new GUI({ width: 300 });
+            const guiparams = {
+                wiretype: 'Normal',
+                wirewidth: defaultWireLineWidth,
+                wirecolor: '#' + defaultWireColor.getHexString(),
+                clippingx: 100,
+                clippingy: 100,
+                clippingz: 100,
+                cameraType: cameraType,
+                navright: function() { navChange([1,  0, 0]); },
+                navtop:   function() { navChange([0,  0, 1]); },
+                navfront: function() { navChange([0, -1, 0]); }
+            };
+
+            // ---- Wires ----
+            const wiretypes = { Normal: 'Normal', Dashed: 'Dashed', None: 'None' };
+
+            const wireFolder = gui.addFolder('Wire');
+            wireFolder.add(guiparams, 'wiretype', wiretypes).name('Wire Display').onChange(wireChange);
+            wireFolder.add(guiparams, 'wirewidth').min(1).max(5).step(1).name('Wire Width').onChange(wireChange);
+            wireFolder.addColor(guiparams, 'wirecolor').name('Wire Color').onChange(wireChange);
+
+            function wireChange() {
+                for (const obj of objects) {
+                    const m = obj.wirematerial;
+                    if (m.dashed) {
+                        if (guiparams.wiretype != 'Dashed') {
+                            m.dashed = false;
+                            delete m.defines.USE_DASH;
+                        }
+                    } else {
+                        if (guiparams.wiretype == 'Dashed') {
+                            m.dashed = true;
+                            // Dashed lines require this as of r122. delete if not dashed
+                            m.defines.USE_DASH = ""; // https://discourse.threejs.org/t/dashed-line2-material/10825
+                        }
+                    }
+                    if (guiparams.wiretype == 'None') {
+                        m.visible = false;
+                    } else {
+                        m.visible = true;
+                    }
+                    m.linewidth = guiparams.wirewidth;
+                    m.color = new THREE.Color(guiparams.wirecolor);
+                    m.needsUpdate = true;
+                }
+                requestRender();
+            }
+            wireChange();
+
+            // ---- Clipping ----
+            const clippingFolder = gui.addFolder('Clipping');
+            clippingFolder.add(guiparams, 'clippingx').min(0).max(100).step(1).name('X-Axis Clipping').onChange(clippingChange);
+            clippingFolder.add(guiparams, 'clippingy').min(0).max(100).step(1).name('Y-Axis Clipping').onChange(clippingChange);
+            clippingFolder.add(guiparams, 'clippingz').min(0).max(100).step(1).name('Z-Axis Clipping').onChange(clippingChange);
+
+            const clipPlaneX = new THREE.Plane(new THREE.Vector3( -1, 0, 0 ), 0);
+            const clipPlaneY = new THREE.Plane(new THREE.Vector3( 0, -1, 0 ), 0);
+            const clipPlaneZ = new THREE.Plane(new THREE.Vector3( 0, 0, -1 ), 0);
+
+            function clippingChange() {
+                if (guiparams.clippingx < 100 || guiparams.clippingy < 100 || guiparams.clippingz < 100) {
+                    if (renderer.clippingPlanes.length == 0) {
+                        renderer.clippingPlanes.push(clipPlaneX, clipPlaneY, clipPlaneZ);
+                    }
+                }
+                clipPlaneX.constant = (globalMaxMin[0].max - globalMaxMin[0].min) * guiparams.clippingx / 100.0 + globalMaxMin[0].min;
+                clipPlaneY.constant = (globalMaxMin[1].max - globalMaxMin[1].min) * guiparams.clippingy / 100.0 + globalMaxMin[1].min;
+                clipPlaneZ.constant = (globalMaxMin[2].max - globalMaxMin[2].min) * guiparams.clippingz / 100.0 + globalMaxMin[2].min;
+                requestRender();
+            }
+
+            // ---- Camera & Navigation ----
+            const camFolder = gui.addFolder('Camera');
+            const cameraTypes = { Perspective: 'Perspective', Orthographic: 'Orthographic' };
+            camFolder.add(guiparams, 'cameraType', cameraTypes).name('Camera type').onChange(cameraChange);
+            camFolder.add(guiparams, 'navright').name('View Right');
+            camFolder.add(guiparams, 'navtop').name('View Top');
+            camFolder.add(guiparams, 'navfront').name('View Front');
+
+            function navChange(v) {
+                const t = new THREE.Vector3();
+                new THREE.Box3().setFromObject(scene).getSize(t);
+                persControls.object.position.set(
+                    v[0] * t.x * 2 + camCenter.x,
+                    v[1] * t.y * 2 + camCenter.y,
+                    v[2] * t.z * 2 + camCenter.z);
+                persControls.target = camCenter;
+                persControls.update();
+                orthControls.object.position.set(
+                    v[0] * t.x + camCenter.x,
+                    v[1] * t.y + camCenter.y,
+                    v[2] * t.z + camCenter.z);
+                orthControls.target = camCenter;
+                orthControls.update();
+                // controls.update() implicitly calls requestRender()
+            }
+
+            function cameraChange(v) {
+                cameraType = v;
+                requestRender();
+            }
+
+            const guiObjects = gui.addFolder('Objects');
+            for (const obj of objects) {
+                // Ignore objects with no vertices
+                if (obj.data.verts.length > 0) {
+                    const guiObjData = {
+                        obj: obj, color: obj.data.color, opacity: obj.data.opacity };
+                    const guiObject = guiObjects.addFolder(obj.data.name);
+                    guiObject.addColor(guiObjData, 'color').name('Color').onChange(GUIObjectChange);
+                    guiObject.add(guiObjData, 'opacity').min(0.0).max(1.0).step(0.05).name('Opacity').onChange(GUIObjectChange);
+                }
+            }
+
+            function GUIObjectChange(v) {
+                for (const f of this.object.obj.faces) {
+                    const m = scene.getObjectByName(f).material;
+                    if (this.property == 'color') {
+                        m.color.setStyle(v);
+                    }
+                    if (this.property == 'opacity') {
+                        m.opacity = v;
+                        m.transparent = (v != 1.0);
+                    }
+                }
+                if (this.property == 'opacity') {
+                    const m = this.object.obj.wirematerial;
+                    m.opacity = v;
+                    m.transparent = (v != 1.0);
+                }
+                requestRender();
+            }
+
+            // Make simple orientation arrows and box - REF: http://jsfiddle.net/b97zd1a3/16/
+            const arrowCanvas = document.querySelector('#arrowCanvas');
+            const arrowRenderer = new THREE.WebGLRenderer({
+                alpha: true,
+                canvas: arrowCanvas
+            }); // clear
+            arrowRenderer.setClearColor(0x000000, 0);
+            arrowRenderer.setSize(arrowCanvas.clientWidth * window.devicePixelRatio,
+                                  arrowCanvas.clientHeight * window.devicePixelRatio,
+                                  false);
+
+            const arrowScene = new THREE.Scene();
+
+            const arrowCamera = new THREE.PerspectiveCamera(
+                50, arrowCanvas.clientWidth / arrowCanvas.clientHeight, 1, 500 );
+            arrowCamera.up = persCamera.up; // important!
+
+            const arrowPos = new THREE.Vector3(0, 0, 0);
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(1, 0, 0), arrowPos, 60, 0x7F2020, 20, 10));
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(0, 1, 0), arrowPos, 60, 0x207F20, 20, 10));
+            arrowScene.add(new THREE.ArrowHelper(
+                new THREE.Vector3(0, 0, 1), arrowPos, 60, 0x20207F, 20, 10));
+            arrowScene.add(new THREE.Mesh(
+                new THREE.BoxGeometry(40, 40, 40),
+                new THREE.MeshLambertMaterial(
+                    { color: 0xaaaaaa, flatShading: false })
+            ));
+            arrowScene.add(new THREE.HemisphereLight(0xC7E8FF, 0xFFE3B3, 1.2));
+
+            // Controls
+            const persControls = new OrbitControls(persCamera, renderer.domElement);
+            persControls.target = camCenter; // rotate around center of parts
+            // persControls.enablePan = false;
+            // persControls.enableDamping = true;
+            persControls.update();
+            const orthControls = new OrbitControls(orthCamera, renderer.domElement);
+            orthControls.target = camCenter; // rotate around center of parts
+            // orthControls.enablePan = false;
+            // orthControls.enableDamping = true;
+            orthControls.update();
+
+            function render() {
+                renderRequested = false;
+                persControls.update();
+                if (cameraType == 'Perspective') {
+                    arrowCamera.position.copy(persCamera.position);
+                    arrowCamera.position.sub(persControls.target);
+                }
+                orthControls.update();
+                if (cameraType == 'Orthographic') {
+                    arrowCamera.position.copy(orthCamera.position);
+                    arrowCamera.position.sub(orthControls.target);
+                }
+                arrowCamera.lookAt(arrowScene.position);
+                arrowCamera.position.setLength(200);
+
+                if (cameraType == 'Perspective') {
+                    renderer.render(scene, persCamera);
+                }
+                if (cameraType == 'Orthographic') {
+                    renderer.render(scene, orthCamera);
+                }
+                arrowRenderer.render(arrowScene, arrowCamera);
+            };
+
+            function requestRender() {
+                if (!renderRequested) {
+                    renderRequested = true;
+                    requestAnimationFrame(render);
+                }
+            }
+
+            persControls.addEventListener('change', requestRender);
+            orthControls.addEventListener('change', requestRender);
+            renderer.domElement.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('resize', onMainCanvasResize, false);
+
+            onMainCanvasResize();
+            requestRender();
+
+            function onMainCanvasResize() {
+                const pixelRatio = window.devicePixelRatio;
+                const width = canvas.clientWidth * pixelRatio | 0;
+                const height = canvas.clientHeight * pixelRatio | 0;
+                const needResize = canvas.width !== width || canvas.height !== height;
+                const aspect = canvas.clientWidth / canvas.clientHeight;
+                if (needResize) {
+                    renderer.setSize(width, height, false);
+
+                    // See https://stackoverflow.com/questions/39373113/three-js-resize-window-not-scaling-properly
+                    const change = originalAspect / aspect;
+                    const newSize = viewSize * change;
+                    orthCamera.left = -aspect * newSize / 2;
+                    orthCamera.right = aspect * newSize  / 2;
+                    orthCamera.top = newSize / 2;
+                    orthCamera.bottom = -newSize / 2;
+                    orthCamera.updateProjectionMatrix();
+
+                    persCamera.aspect = canvas.clientWidth / canvas.clientHeight;
+                    persCamera.updateProjectionMatrix();
+                }
+
+                for (const obj of objects) {
+                    obj.wirematerial.resolution.set(width, height);
+                }
+                requestRender();
+            }
+
+            // XXX use mouse click to toggle the gui for the selected object?
+
+            function onMouseMove(e)  {
+                let c = false;
+                if (cameraType == 'Orthographic') {
+                    c = orthCamera;
+                }
+                if (cameraType == 'Perspective') {
+                    c = persCamera;
+                }
+                if (!c) {
+                    return;
+                }
+
+                const raycaster = new THREE.Raycaster();
+                raycaster.setFromCamera(new THREE.Vector2(
+                    (e.clientX / canvas.clientWidth) * 2 - 1,
+                    -(e.clientY / canvas.clientHeight) * 2 + 1),
+                                        c);
+                const intersects = raycaster.intersectObjects(raycasterObj);
+
+                let chosen = '';
+                for (const i of intersects) {
+                    const m = i.object.material;
+                    if (m.opacity > 0) {
+                        if (m.emissive.getHex() == 0x000000) {
+                            m.emissive.setHex( 0x777777 );
+                            m.needsUpdate = true;
+                            requestRender();
+                        }
+                        chosen = i.object.name;
+                        break;
+                    }
+                }
+                for (const r of raycasterObj) {
+                    if (r.name == chosen) {
+                        continue;
+                    }
+                    if (r.material.emissive.getHex() != 0x000000) {
+                        r.material.emissive.setHex(0x000000);
+                        r.material.needsUpdate = true;
+                        requestRender();
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>
