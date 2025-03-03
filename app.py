@@ -1,5 +1,7 @@
 from flask import Flask, render_template, send_from_directory, jsonify, request
 import os
+import random
+import json
 
 app = Flask(__name__)
 
@@ -37,6 +39,36 @@ def update_temperature():
     if 'change' in data:
         temperature += data['change']  # Update temperature based on the change value
     return jsonify({"temperature": temperature})
+
+
+telemetry_file = "assets/thermostat_schedule.json"
+
+def generate_telemetry():
+    data = []
+    current_temp = 22
+    for t in range(0, 300, 5):
+        decision = random.random()
+        if decision < 0.4:
+            current_temp += 0.5
+        elif decision < 0.8:
+            current_temp -= 0.5
+
+        current_temp = max(10, min(40, current_temp))
+        data.append({"time": t, "temperature": current_temp})
+
+    # Save to JSON File
+    with open(telemetry_file, "w") as f:
+        json.dump(data, f)
+
+@app.route("/get-telemetry")
+def get_telemetry():
+    data = []
+    temp = 22
+    for t in range(0, 300, 5):
+        temp += random.choice([-0.5, 0.5, 0])
+        temp = max(10, min(40, temp))
+        data.append({"time": t, "temperature": temp})
+    return jsonify(data)
 
 if __name__ == '__main__':
     app.run(debug=True)

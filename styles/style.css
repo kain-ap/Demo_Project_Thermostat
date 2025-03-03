@@ -1,27 +1,133 @@
+/* Basic body and page styling */
 body {
-    margin: 0;
-    overflow: hidden;
-    position: relative;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  font-family: Arial, sans-serif;
+}
+
+/* Container for the Three.js scene */
+#threeSceneContainer {
+  flex-grow: 1; /* Takes remaining space */
+  width: 100%;
+  height: 75%; /* 75% of the viewport height for the 3D model */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Positioning relative to add chart */
+}
+
+/* Chart container - larger size and more formal look */
+#chartContainer {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 400px; /* Increase width */
+  height: 250px; /* Increase height */
+  background-color: #ffffff;
+  border: 1px solid #ddd; /* Subtle border for a more formal look */
+  padding: 15px;
+  box-sizing: border-box;
+  z-index: 10; /* Ensure it's above other elements */
+}
+
+/* Temperature info panel - moved to top-left */
+#infoPanel {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: auto;
+  max-width: 300px;
+  z-index: 10;
+  font-size: 14px; /* Adjust font size for clarity */
+}
+
+#thermostatLabel {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #333; /* Dark text color */
+  background-color: #f1f1f1; /* Light background */
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  text-align: center;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  border: 2px solid #888; /* Optional border */
+}
+
+#thermostatLabel:hover {
+  background-color: #e0e0e0; /* Slightly darker background on hover */
+  cursor: pointer;
+}
+
+/* Styling for the temperature range slider */
+input[type="range"] {
+  width: 70%;
+  margin-left: 10px;
+}
+
+/* Button styles */
+button {
+  background-color: #007bff; /* Professional blue */
+  color: white;
+  border: 1px solid #0056b3; /* Darker blue border for a sharp look */
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  margin: 5px;
+  font-size: 14px;
+}
+
+button:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+}
+
+/* Responsive settings for small devices */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
   }
-  
+
+  #threeSceneContainer {
+    height: 60%; /* Reduce height for small screens */
+  }
+
   #infoPanel {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    padding: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    font-size: 16px;
-    z-index: 2;
-  }
-  
-  #chartContainer {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+    position: fixed;
+    top: 20px;
+    left: 20px;
     background-color: rgba(255, 255, 255, 0.8);
     padding: 15px;
     border-radius: 8px;
-    z-index: 3;
-  }
-  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#chartContainer {
+    position: relative;
+    width: 80%;
+    height: 400px;
+    margin: 60px auto;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+}
+
+}

@@ -1,0 +1,22 @@
+[
+    {
+        "time": 0,
+        "temperature": 22
+    },
+    {
+        "time": 5,
+        "temperature": 23
+    },
+    {
+        "time": 10,
+        "temperature": 22.5
+    },
+    {
+        "time": 15,
+        "temperature": 22
+    },
+    {
+        "time": 20,
+        "temperature": 21.5
+    }
+]
