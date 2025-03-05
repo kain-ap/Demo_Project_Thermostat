@@ -1,8 +1,6 @@
-// temperature.js
 import { state } from "./state.js";
 import { updateChart } from "./chart.js";
 import { updateInfoPanel } from "./ui.js";
-import { directionalLight } from "./threejs.js";
 
 export let number = 22; // Initial temperature value
 

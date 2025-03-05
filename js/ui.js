@@ -1,15 +1,20 @@
-// ui.js
-import { updateTemperature, number } from "./temperature.js";
+import { updateTemperature } from "./temperature.js";
 import { downloadTelemetryJSON } from "./telemetry.js";
 import { numberChart } from "./chart.js";
 import { updateBackgroundColor } from "./threejs.js";
+import { state } from "./state.js";
+
+// Function to get the telemetry-based temperature (no manual mode)
+function getTelemetryTemperature() {
+    return state.number;  // Directly return the current telemetry temperature
+}
 
 export function updateInfoPanel() {
-    const infoPanel = document.getElementById("infoPanel");
-    if (infoPanel) {
-        infoPanel.innerHTML = `Current Temperature: ${number}°C`;
+    const tempDisplay = document.getElementById("tempDisplay");
+    if (tempDisplay) {
+        tempDisplay.innerText = `${state.number}°C`;
     }
-    updateBackgroundColor(number);
+    updateBackgroundColor(state.number);
 }
 
 // Event listener for the temperature range input
@@ -17,9 +22,14 @@ const tempRangeInput = document.getElementById('tempRange');
 if (tempRangeInput) {
     tempRangeInput.addEventListener('input', function(event) {
         const newTemp = parseFloat(event.target.value);
-        updateTemperature(newTemp - number);
+        // Here, just update the temperature based on the telemetry
+        updateTemperature(newTemp);
     });
 }
+
+// Remove manual mode toggle since it's no longer needed
+
+// Remove manual temperature increase/decrease buttons as manual control is disabled
 
 // Download telemetry JSON button event listener
 const downloadTelemetryBtn = document.getElementById('downloadTelemetryBtn');

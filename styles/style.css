@@ -81,7 +81,20 @@ input[type="range"] {
   margin-left: 10px;
 }
 
-/* Button styles */
+/* Container for all buttons */
+#buttonContainer {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  position: fixed;
+  bottom: 80px;
+  left: 0;
+  width: 100%;
+  padding: 0 20px; /* Adjusts the horizontal spacing */
+  box-sizing: border-box;
+}
+
+/* General button styles */
 button {
   background-color: #007bff; /* Professional blue */
   color: white;
@@ -90,14 +103,15 @@ button {
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s ease, border-color 0.3s ease;
-  margin: 5px;
   font-size: 14px;
 }
 
+/* Button hover effect */
 button:hover {
   background-color: #0056b3;
   border-color: #004085;
 }
+
 
 /* Responsive settings for small devices */
 @media (max-width: 768px) {

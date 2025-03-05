@@ -1,5 +1,6 @@
 // telemetry.js
 import { updateTemperature } from "./temperature.js";
+import { numberChart } from "./chart.js";
 
 export const TELEMETRY_API = "/get-telemetry";
 export let telemetryData = [];
@@ -71,11 +72,32 @@ export function triggerButton(buttonName) {
 }
 
 export function downloadTelemetryJSON() {
+    if (!numberChart || !numberChart.data || !numberChart.data.datasets) {
+        console.error("Chart is not initialized or datasets are missing.");
+        return;
+    }
+
+    // Extract the temperature data and labels (time)
+    const dataset = numberChart.data.datasets[0];  // Assuming you want data from the first dataset
+    const data = dataset.data;  // Temperatures
+    const labels = numberChart.data.labels;  // Time labels
+
+    // Create an array of objects with time and temperature
+    const telemetryData = data.map((temp, index) => {
+        return {
+            time: parseFloat(labels[index]),  // Assuming the time is stored as labels
+            temperature: temp
+        };
+    });
+
+    // Convert the data to a JSON string
     const jsonStr = JSON.stringify(telemetryData, null, 2);
+
+    // Prepare the download
     const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(jsonStr);
     const link = document.createElement("a");
     link.setAttribute("href", dataUri);
-    link.setAttribute("download", "telemetry_data.json");
+    link.setAttribute("download", "temperature_data.json");
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
