@@ -5,40 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Temperature Control</title>
     <link rel="stylesheet" href="{{ url_for('serve_styles', path='style.css') }}">
-
-    <!-- Load Chart.js before main.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Three.js 3D Model Container -->
+    <!-- Your HTML content here -->
     <div id="threeSceneContainer"></div>
-
-    <!-- Thermostat Label - Centered at the top -->
     <div id="thermostatLabel">Thermostat</div>
-
-    <!-- Temperature Information Panel - Top-left corner -->
     <div id="infoPanel">
         <p>Current Temperature: <span id="tempDisplay">22°C</span></p>
         <input type="range" id="tempRange" min="0" max="50" value="22" step="0.1">
     </div>
+    <div id="alert" style="display:none;"></div>
+    <div id="coolingIcon" class="cooling-icon">❄️ Auto Cooling...</div>
 
-    <!-- Chart Container -->
     <div id="chartContainer">
         <canvas id="numberChart"></canvas>
     </div>
 
-    <!-- Download Buttons -->
     <button id="downloadTelemetryBtn" style="position: fixed; bottom: 100px; left: 20px;">Download Telemetry JSON</button>
     <button id="downloadChartBtn" style="position: fixed; bottom: 60px; left: 20px;">Download Chart</button>
 
-    <!-- Three.js library -->
+    <!-- External Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
-    
-    <!-- GLTFLoader and OrbitControls (from examples) -->
+    <!-- Load the GLTFLoader and OrbitControls from the CDN -->
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
 
-    <!-- Your main script -->
-    <script src="{{ url_for('serve_js', path='main.js') }}"></script>
+    <!-- Your JavaScript Files -->
+    <script type="module" src="{{ url_for('serve_js', path='temperature.js') }}"></script>
+    <script type="module" src="{{ url_for('serve_js', path='chart.js') }}"></script>
+    <script type="module" src="{{ url_for('serve_js', path='threejs.js') }}"></script>
+    <script type="module" src="{{ url_for('serve_js', path='ui.js') }}"></script>
+    <script type="module" src="{{ url_for('serve_js', path='telemetry.js') }}"></script>
+    <script type="module" src="{{ url_for('serve_js', path='app.js') }}"></script>
 </body>
 </html>
