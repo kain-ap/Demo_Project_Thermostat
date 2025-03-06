@@ -238,3 +238,43 @@ button:hover {
   top: 160px; /* Position below main temp panel */
   background-color: #f8f9fa;
 }
+#status-alert {
+  position: fixed;
+  top: 120px;
+  left: 20px;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  display: none;
+  z-index: 1000;
+  font-weight: bold;
+  border: 2px solid;
+  animation: alert-pulse 1.5s infinite;
+}
+
+#infoPanel {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(5px);
+  border-radius: 12px;
+  padding: 15px 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+#infoPanel p {
+  margin: 8px 0;
+  font-size: 16px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  min-width: 200px;
+}
+
+.temp-label {
+  color: #666;
+  margin-right: 15px;
+}
+
+.temp-value {
+  font-weight: bold;
+  color: #2c3e50;
+}

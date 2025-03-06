@@ -1,6 +1,7 @@
 // telemetry.js
 import { updateTemperature } from "./temperature.js";
 import { numberChart } from "./chart.js";
+import { state } from "./state.js";
 
 export const TELEMETRY_API = "/get-telemetry";
 export let telemetryData = [];
@@ -19,7 +20,7 @@ export async function fetchTelemetry() {
         const response = await fetch(TELEMETRY_API);
         telemetryData = await response.json();
         console.log("Telemetry JSON Loaded:", telemetryData);
-        simulateTelemetry();
+        //simulateTelemetry();
     } catch (error) {
         console.error("Error fetching telemetry:", error);
     }
@@ -77,33 +78,21 @@ export function triggerButton(buttonName) {
 }
 
 export function downloadTelemetryJSON() {
-    if (!numberChart || !numberChart.data || !numberChart.data.datasets) {
-        console.error("Chart is not initialized or datasets are missing.");
-        return;
-    }
+    const data = state.recordedData.timestamps.map((timestamp, index) => ({
+        timestamp: new Date(timestamp).toISOString(),
+        thermostat: state.recordedData.thermostat[index],
+        outside: state.recordedData.outside[index]
+    }));
 
-    // Extract the temperature data and labels (time)
-    const dataset = numberChart.data.datasets[0];  // Assuming you want data from the first dataset
-    const data = dataset.data;  // Temperatures
-    const labels = numberChart.data.labels;  // Time labels
-
-    // Create an array of objects with time and temperature
-    const telemetryData = data.map((temp, index) => {
-        return {
-            time: parseFloat(labels[index]),  // Assuming the time is stored as labels
-            temperature: temp
-        };
-    });
-
-    // Convert the data to a JSON string
-    const jsonStr = JSON.stringify(telemetryData, null, 2);
-
-    // Prepare the download
-    const dataUri = "data:application/json;charset=utf-8," + encodeURIComponent(jsonStr);
-    const link = document.createElement("a");
-    link.setAttribute("href", dataUri);
-    link.setAttribute("download", "temperature_data.json");
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+   
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `temperature_data_${Date.now()}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }

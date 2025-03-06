@@ -20,7 +20,7 @@ def update_outside_temp():
             outside_temp += change
             outside_temp = max(10, min(40, outside_temp))
             print(f"Outside temp updated: {outside_temp}°C")
-        time.sleep(180)  # Update every 3 minutes
+        time.sleep(30)  # Update every 3 minutes
 
 # Serve the HTML file
 @app.route('/')

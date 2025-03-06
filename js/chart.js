@@ -35,28 +35,24 @@ export function initializeChart() {
                     },
                     scales: {
                         y: {
-                            title: {
-                                display: true,
-                                text: 'Temperature (°C)'
-                            },
+                            title: { display: true, text: 'Temperature (°C)' },
                             min: 10,
-                            max: 40
+                            max: 40,
+                            grace: '5%' // Add padding
                         },
                         x: {
-                            title: {
-                                display: true,
-                                text: 'Time (seconds)'
+                            title: { display: true, text: 'Time (minutes)' },
+                            type: 'linear',
+                            ticks: {
+                                callback: function(value) {
+                                    return (value/60).toFixed(1); // Convert seconds to minutes
+                                }
                             }
                         }
                     },
                     plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        zoom: {
-                            pan: { enabled: true, mode: 'xy' },
-                            zoom: { enabled: true, mode: 'xy' }
-                        }
+                        legend: { position: 'top' },
+                        zoom: { pan: { enabled: true }, zoom: { enabled: true } }
                     }
                 },
             });
@@ -72,6 +68,7 @@ export function initializeChart() {
 
 export function updateChart(newNumber, outsideTemp) {
     if (!numberChart) return;
+    
 
     // Initialize start time if undefined
     if (typeof updateChart.startTime === "undefined") {

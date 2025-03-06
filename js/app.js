@@ -1,93 +1,106 @@
 import { animate } from "./threejs.js";
 import { fetchTemperature } from "./temperature.js";
-import { fetchTelemetry } from "./telemetry.js";
-import "./ui.js";  // Sets up all UI event listeners
-import { initializeChart } from "./chart.js"; // Initialize chart from chart.js
+import { initializeChart } from "./chart.js";
 import { state } from "./state.js";
+import { updateInfoPanel } from "./ui.js"; // Add this import
 
-// Start the Three.js animation loop
+// Start Three.js animation
 animate();
 
-// Load initial temperature from the API
+// Initial setup
 fetchTemperature();
-setInterval(fetchTemperature, 5000); // Fetch temperature every 5 seconds
+setInterval(fetchTemperature, 5000);
 
-// Initialize chart and then fetch telemetry data
+// Chart initialization
 initializeChart()
-  .then(() => {
-    console.log("Chart initialized");
-    // Once the chart is initialized, fetch telemetry data
-    fetchTelemetry();
-  })
-  .catch((error) => {
-    console.error("Error initializing chart:", error);
-  });
-  let lastOutsideTemp = null;
-  async function checkOutsideTemperature() {
-    try {
-        const response = await fetch('/get-outside-temperature');
-        const data = await response.json();
-        const outsideTemp = data.outsideTemperature;
-       
-        // Update displays
-        const outsideTempValue = document.getElementById('outsideTempValue');
-        if (outsideTempValue) {
-            outsideTempValue.textContent = outsideTemp.toFixed(1);
-        }
+  .then(() => console.log("Chart initialized"))
+  .catch(error => console.error("Chart error:", error));
 
-        // Update chart
-        if (outsideTemp !== lastOutsideTemp) {
-            import("./chart.js").then(({ updateChart }) => {
-                updateChart(state.number, outsideTemp);
-            });
-            lastOutsideTemp = outsideTemp;
-        }
+let lastOutsideTemp = null;
 
-        const { updateTemperature } = await import('./temperature.js');
-        const { triggerButton } = await import('./telemetry.js');
-        const alertElement = document.getElementById('alert');
+async function checkOutsideTemperature() {
+  try {
+    // Fetch temperatures
+    const [tempRes, outsideRes] = await Promise.all([
+      fetch('/get-temperature'),
+      fetch('/get-outside-temperature')
+    ]);
 
-        // Clear previous alerts
-        if (alertElement) alertElement.style.display = 'none';
 
-        if (outsideTemp > 28) {
-            // Cooling logic
-            if (state.number > 22) {
-                const adjustment = Math.max(22 - state.number, -1);
-                await updateTemperature(adjustment);
-                triggerButton('decreasebutton');
-                if (alertElement) {
-                    alertElement.textContent = 'Cooling to 22°C (high outside temp)';
-                    alertElement.style.display = 'block';
-                }
-            }
-        } else if (outsideTemp < 15) {
-            // Heating logic
-            if (state.number < 24) {
-                const adjustment = Math.min(24 - state.number, 1);
-                await updateTemperature(adjustment);
-                triggerButton('increasebutton');
-                if (alertElement) {
-                    alertElement.textContent = 'Heating to 24°C (low outside temp)';
-                    alertElement.style.display = 'block';
-                }
-            }
-        } else {
-            // Sync with outside temperature
-            if (Math.abs(state.number - outsideTemp) > 0.1) {
-                const adjustment = outsideTemp - state.number;
-                await updateTemperature(adjustment);
-                if (alertElement) {
-                    alertElement.textContent = `Syncing with outside temp: ${outsideTemp.toFixed(1)}°C`;
-                    alertElement.style.display = 'block';
-                }
-            }
-        }
-       
-    } catch (error) {
-        console.error('Error:', error);
+
+    const { temperature: currentTemp } = await tempRes.json();
+    const { outsideTemperature: outsideTemp } = await outsideRes.json();
+
+    // Update state and UI
+    state.number = currentTemp;
+    updateInfoPanel(currentTemp, outsideTemp); // Now properly imported
+    // Get DOM elements
+    const statusElement = document.getElementById('status-alert');
+    const criticalAlert = document.getElementById('alert');
+    // Record data
+    const timestamp = Date.now();
+    state.recordedData.timestamps.push(timestamp);
+    state.recordedData.thermostat.push(currentTemp);
+    state.recordedData.outside.push(outsideTemp);
+
+    // Keep only last 1000 entries
+    if (state.recordedData.timestamps.length > 1000) {
+      state.recordedData.timestamps.shift();
+      state.recordedData.thermostat.shift();
+      state.recordedData.outside.shift();
     }
+    // Clear non-critical alerts
+    if (statusElement) statusElement.style.display = 'none';
+
+    // Temperature control logic
+    if (outsideTemp > 28) {
+      if (currentTemp > 22) {
+        await adjustTemperature(22 - currentTemp, 'cooling', statusElement);
+      }
+    } else if (outsideTemp < 15) {
+      if (currentTemp < 24) {
+        await adjustTemperature(24 - currentTemp, 'heating', statusElement);
+      }
+    } else {
+      if (Math.abs(currentTemp - outsideTemp) > 0.5) {
+        await adjustTemperature(outsideTemp - currentTemp, 'syncing', statusElement);
+      }
+    }
+
+    // Update chart
+    import("./chart.js").then(({ updateChart }) =>
+      updateChart(currentTemp, outsideTemp)
+    );
+
+
+
+  } catch (error) {
+    console.error('Error:', error);
+  }
 }
 
-  // Update the interval to check more frequently for better visualization
-  setInterval(checkOutsideTemperature, 5000); // Check every 5 seconds instead of 3 minutes
+async function adjustTemperature(change, mode, alertElement) {
+  const { updateTemperature } = await import('./temperature.js');
+  const { triggerButton } = await import('./telemetry.js');
+
+  await updateTemperature(change);
+  triggerButton(change > 0 ? 'increasebutton' : 'decreasebutton');
+
+  if (alertElement) {
+    alertElement.textContent = {
+      cooling: '⚠️ Cooling to 22°C (High External Temperature)',
+      heating: '⚠️ Heating to 24°C (Low External Temperature)',
+      syncing: `🔄 Syncing with outside temperature`
+    }[mode];
+
+    alertElement.style.display = 'block';
+    alertElement.style.backgroundColor = {
+      cooling: '#ffd700',
+      heating: '#a9d1e8',
+      syncing: '#d1f7d1'
+    }[mode];
+  }
+}
+
+// Update the interval to check more frequently for better visualization
+setInterval(checkOutsideTemperature, 5000); // Check every 5 seconds instead of 3 minutes

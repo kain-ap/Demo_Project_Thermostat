@@ -4,17 +4,18 @@ import { numberChart } from "./chart.js";
 import { updateBackgroundColor } from "./threejs.js";
 import { state } from "./state.js";
 
-// Function to get the telemetry-based temperature (no manual mode)
-function getTelemetryTemperature() {
-    return state.number;  // Directly return the current telemetry temperature
-}
-
-export function updateInfoPanel() {
-    const tempDisplay = document.getElementById("tempDisplay");
-    if (tempDisplay) {
-        tempDisplay.innerText = `${state.number}°C`;
-    }
-    updateBackgroundColor(state.number);
+export function updateInfoPanel(currentTemp, outsideTemp) {
+  const tempDisplay = document.getElementById("tempDisplay");
+  const outsideDisplay = document.getElementById("outsideTempValue");
+ 
+  // Add null checks and default values
+  const formattedCurrent = currentTemp?.toFixed?.(1) ?? '--';
+  const formattedOutside = outsideTemp?.toFixed?.(1) ?? '--';
+ 
+  if (tempDisplay) tempDisplay.textContent = `${formattedCurrent}°C`;
+  if (outsideDisplay) outsideDisplay.textContent = `${formattedOutside}°C`;
+ 
+  updateBackgroundColor(currentTemp || state.number);
 }
 
 // Event listener for the temperature range input
