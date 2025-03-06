@@ -44,54 +44,47 @@ def update_temperature():
 
 telemetry_file = "assets/thermostat_schedule.json"
 
-def generate_telemetry():
+@app.route("/get-telemetry")
+def get_telemetry():
+    generate_telemetry_data()  # Generate telemetry before serving
+    try:
+        with open(telemetry_file, "r") as f:
+            data = json.load(f)
+        return jsonify(data)
+    except Exception as e:
+        print(f"Telemetry Error: {e}")
+        return jsonify({"error": "Failed to load telemetry"}), 500
+
+
+def generate_telemetry_data():
     data = []
     current_temp = 22
     heating_period = False  # Track if we're heating or cooling
+    variability = random.choice([0.2, 0.5, 1.0, 2.0])  # Randomize variability levels
+    cycle_length = random.choice([30, 50, 70])  # Randomize cycle duration
+
     for t in range(0, 300, 5):
-        # Simulate a heating or cooling cycle
+        # Introduce random small or large fluctuations
+        fluctuation = random.uniform(-2.0, 2.0) if random.random() > 0.3 else random.uniform(-0.2, 0.2)
+
         if heating_period:
-            current_temp += 0.5  # Simulate a continuous increase in temperature (heating)
+            current_temp += variability + fluctuation
         else:
-            current_temp -= 0.5  # Simulate a continuous decrease in temperature (cooling)
-        
-        # Toggle heating/cooling after some time (simulate change of cycles)
-        if t % 50 == 0:
+            current_temp -= variability + fluctuation
+
+        if t % cycle_length == 0:
             heating_period = not heating_period
-        
-        current_temp = max(10, min(40, current_temp))  # Keep temperature within bounds
+            variability = random.choice([0.2, 0.5, 1.0, 2.0])
+            cycle_length = random.choice([30, 50, 70])
+
+        current_temp = max(10, min(40, current_temp))
         data.append({"time": t, "temperature": current_temp})
 
     # Save to JSON File
     with open(telemetry_file, "w") as f:
         json.dump(data, f)
 
-@app.route("/get-telemetry")
-def get_telemetry():
-    # Get the limit from the request query parameter (default to 100 if not provided)
-    limit = int(request.args.get('limit', 100))
 
-    # Simulate telemetry data with a heating/cooling cycle
-    data = []
-    temp = 22
-    heating_period = False  # Toggle heating/cooling cycles
-
-    for t in range(0, 300, 5):
-        # Alternate between heating and cooling periods
-        if heating_period:
-            temp += 0.5  # Heating up
-        else:
-            temp -= 0.5  # Cooling down
-        
-        # Toggle heating/cooling period every 50 steps
-        if t % 50 == 0:
-            heating_period = not heating_period
-
-        temp = max(10, min(40, temp))  # Clamp temperature between 10 and 40
-        data.append({"time": t, "temperature": temp})
-
-    # Return only the number of data points requested
-    return jsonify(data[:limit])
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -26,10 +26,14 @@ export async function updateTemperature(change) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ change: change }),
         });
+
         const data = await response.json();
-        state.number = data.temperature;
-        updateChart(state.number);
-        updateInfoPanel();
+        console.log("Temperature Updated:", data.temperature);
+
+        state.number = data.temperature; // Set the correct temperature value
+        updateChart(state.number); // Update the chart
+        updateInfoPanel(); // Update info panel HTML
+        checkTemperatureAlerts(state.number); // Trigger alert if needed
     } catch (error) {
         console.error("Error updating temperature:", error);
     }

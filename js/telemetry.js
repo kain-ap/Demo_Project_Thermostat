@@ -7,6 +7,12 @@ export let telemetryData = [];
 let chartIndex = 0;
 let currentTemperature = 22;
 let manualUpdate = false;
+let buttonOriginalColors = {
+    increasebutton: null,
+    decreasebutton: null
+};
+
+
 
 export async function fetchTelemetry() {
     try {
@@ -23,26 +29,25 @@ function simulateTelemetry() {
     setInterval(() => {
         if (chartIndex < telemetryData.length && !manualUpdate) {
             const newTemp = telemetryData[chartIndex].temperature;
-            if (newTemp > currentTemperature) {
-                console.log("Auto Increasing...");
-                triggerButton("increasebutton");
-                updateTemperature(+0.5);
-            } else if (newTemp < currentTemperature) {
-                console.log("Auto Decreasing...");
-                triggerButton("decreasebutton");
-                updateTemperature(-0.5);
+            console.log("Simulated Temp:", newTemp);
+
+            const tempDiff = newTemp - currentTemperature;
+
+            if (tempDiff !== 0) {
+                console.log(tempDiff > 0 ? "Auto Increasing..." : "Auto Decreasing...");
+                updateTemperature(newTemp - currentTemperature); // Send the exact difference to Flask
+                triggerButton(tempDiff > 0 ? "increasebutton" : "decreasebutton");
+
             }
+
             currentTemperature = newTemp;
             chartIndex++;
         }
-        manualUpdate = false;
+        // Reset manualUpdate only if chartIndex changed
+        if (chartIndex > 0) manualUpdate = false;
     }, 5000);
 }
 
-let buttonOriginalColors = {
-    increasebutton: null,
-    decreasebutton: null
-};
 
 export function triggerButton(buttonName) {
     // Traverse the Three.js scene to find the corresponding button mesh

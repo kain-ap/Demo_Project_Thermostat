@@ -26,7 +26,7 @@ export function initializeChart() {
                     scales: {
                         y: {
                             beginAtZero: true,
-                            max: 40,
+                            max: 30,
                         },
                     },
                     plugins: {
@@ -79,7 +79,7 @@ export function updateChart(newNumber) {
         numberChart.data.datasets[0].data.shift();
     }
 
-    const maxTemp = Math.max(...numberChart.data.datasets[0].data, 40);
+    const maxTemp = Math.max(...numberChart.data.datasets[0].data, 30);
     numberChart.options.scales.y.max = maxTemp + 10;
 
     // Update the chart
