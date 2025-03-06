@@ -11,10 +11,11 @@
     <div id="threeSceneContainer"></div>
     <div id="thermostatLabel">Thermostat</div>
     <div id="infoPanel">
-        <p>Current Temperature: <span id="tempDisplay">22°C</span></p>
+        <p>Thermostat: <span id="tempDisplay">22°C</span></p><br>
+        <br> <p>Outside: <span id="outsideTempValue">22°C</span></p>
     </div>
-    <div id="alert" style="display:none;"></div>
-    <div id="coolingIcon" class="cooling-icon">❄️ Auto Cooling...</div>
+
+    <div id="outside-alert" class="alert" style="display: none; position: absolute; top: 20px; right: 20px;"></div>
 
     <div id="chartContainer">
         <canvas id="numberChart"></canvas>

@@ -171,3 +171,70 @@ button:hover {
       opacity: 1;
   }
 }
+/* Temperature Alert System */
+#alert {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 15px 25px;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+  display: none;
+  z-index: 1000;
+  font-weight: bold;
+  border: 2px solid #cc0000;
+  animation: alert-pulse 1.5s infinite;
+}
+
+#outside-alert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 15px 25px;
+  background-color: #ffd700;
+  color: #856404;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  display: none;
+  z-index: 1000;
+  font-weight: bold;
+  border: 2px solid #ffc300;
+}
+
+@keyframes alert-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* Ensure alerts don't overlap with thermostat label */
+@media (min-width: 769px) {
+  #alert {
+      top: 80px;
+      left: 20px;
+  }
+ 
+  #outside-alert {
+      top: 80px;
+      right: 20px;
+  }
+}
+
+/* Add to your existing styles */
+.temp-panel {
+  position: fixed;
+  top: 120px;
+  left: 20px;
+  padding: 12px 20px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  z-index: 10;
+  font-size: 14px;
+}
+
+#outsideTempPanel {
+  top: 160px; /* Position below main temp panel */
+  background-color: #f8f9fa;
+}

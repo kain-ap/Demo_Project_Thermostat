@@ -13,35 +13,51 @@ export function initializeChart() {
                     labels: ["Start"],
                     datasets: [
                         {
-                            label: "Simulated Temperature",
+                            label: "Thermostat Temperature",
                             data: [state.number],
                             borderColor: "rgba(75, 192, 192, 1)",
                             fill: false,
-                            hidden: false, // Simulated data is visible by default
                         },
+                        {
+                            label: "Outside Temperature",
+                            data: [],
+                            borderColor: "rgba(255, 99, 132, 1)",
+                            fill: false,
+                            hidden: false,
+                        }
                     ],
                 },
                 options: {
                     responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            max: 30,
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            },
+                            min: 10,
+                            max: 40
                         },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time (seconds)'
+                            }
+                        }
                     },
                     plugins: {
-                        zoom: {
-                            pan: {
-                                enabled: true,
-                                mode: "xy",
-                            },
-                            zoom: {
-                                enabled: true,
-                                mode: "xy",
-                                speed: 0.1,
-                            },
+                        legend: {
+                            position: 'top',
                         },
-                    },
+                        zoom: {
+                            pan: { enabled: true, mode: 'xy' },
+                            zoom: { enabled: true, mode: 'xy' }
+                        }
+                    }
                 },
             });
 
@@ -54,34 +70,42 @@ export function initializeChart() {
     });
 }
 
-// Function to update the chart (only telemetry data now)
-export function updateChart(newNumber) {
-    if (!numberChart) {
-        console.error("Chart not initialized");
-        return;
-    }
+export function updateChart(newNumber, outsideTemp) {
+    if (!numberChart) return;
 
+    // Initialize start time if undefined
     if (typeof updateChart.startTime === "undefined") {
         updateChart.startTime = Date.now();
     }
 
     const elapsedTime = ((Date.now() - updateChart.startTime) / 1000).toFixed(2);
-
-    // Show the simulated data and hide the manual data (no manual mode now)
-    numberChart.data.datasets[0].hidden = false;
-
-    // Add simulated data when not in manual mode
+   
+    // Add new time label
     numberChart.data.labels.push(elapsedTime);
-    numberChart.data.datasets[0].data.push(newNumber); // Update with simulated data
+   
+    // Update both datasets
+    numberChart.data.datasets[0].data.push(newNumber);
+    numberChart.data.datasets[1].data.push(outsideTemp);
 
+    // Maintain data length
     if (numberChart.data.labels.length > 20) {
         numberChart.data.labels.shift();
-        numberChart.data.datasets[0].data.shift();
+        numberChart.data.datasets.forEach(dataset => dataset.data.shift());
     }
 
-    const maxTemp = Math.max(...numberChart.data.datasets[0].data, 30);
-    numberChart.options.scales.y.max = maxTemp + 10;
+    // Update Y-axis scale
+    const allData = [
+        ...numberChart.data.datasets[0].data,
+        ...numberChart.data.datasets[1].data
+    ];
+    const maxTemp = Math.max(...allData, 30);
+    const minTemp = Math.min(...allData, 10);
+   
+    numberChart.options.scales.y = {
+        ...numberChart.options.scales.y,
+        max: maxTemp + 5,
+        min: minTemp - 5
+    };
 
-    // Update the chart
     numberChart.update();
 }

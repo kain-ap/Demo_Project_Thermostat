@@ -9,13 +9,19 @@ const API_URL_UPDATE = "http://127.0.0.1:5000/update-temperature";
 
 export async function fetchTemperature() {
     try {
-        const response = await fetch(API_URL_GET);
-        const data = await response.json();
-        state.number = data.temperature;
-        updateChart(state.number);
+        const [tempResponse, outsideResponse] = await Promise.all([
+            fetch(API_URL_GET),
+            fetch('/get-outside-temperature')
+        ]);
+       
+        const tempData = await tempResponse.json();
+        const outsideData = await outsideResponse.json();
+       
+        state.number = tempData.temperature;
+        updateChart(state.number, outsideData.outsideTemperature);
         updateInfoPanel();
     } catch (error) {
-        console.error("Error fetching temperature:", error);
+        console.error("Error:", error);
     }
 }
 
@@ -33,20 +39,25 @@ export async function updateTemperature(change) {
         state.number = data.temperature; // Set the correct temperature value
         updateChart(state.number); // Update the chart
         updateInfoPanel(); // Update info panel HTML
-        checkTemperatureAlerts(state.number); // Trigger alert if needed
     } catch (error) {
         console.error("Error updating temperature:", error);
     }
 }
 
-// Optionally, you can add a temperature alert check
 export function checkTemperatureAlerts(temp) {
     const alertElement = document.getElementById("alert");
-    if (temp > 30) {
-        alertElement.style.display = "block";
-        alertElement.innerHTML = "Warning: High temperature!";
-    } else {
-        alertElement.style.display = "none";
+    const outsideAlertElement = document.getElementById("outside-alert");
+   
+    // Add null checks for elements
+    if (alertElement && outsideAlertElement) {
+        const outsideAlertActive = outsideAlertElement.style.display !== 'none';
+       
+        if (temp > 30 && !outsideAlertActive) {
+            alertElement.style.display = "block";
+            alertElement.innerHTML = "Warning: Critical Internal Temperature!";
+        } else {
+            alertElement.style.display = "none";
+        }
     }
 }
 
@@ -55,3 +66,4 @@ export function updateLightingBasedOnTemperature(temp) {
     const lightColor = temp > 30 ? new THREE.Color(0xff4500) : new THREE.Color(0x1e90ff);
     directionalLight.color = lightColor;
 }
+
