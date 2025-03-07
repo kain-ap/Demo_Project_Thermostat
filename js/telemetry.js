@@ -70,7 +70,7 @@ export function triggerButton(buttonName) {
                 setTimeout(() => {
                     child.material.color.copy(buttonOriginalColors[buttonName]);
                     console.log(`Reverted to Original Color for ${buttonName}: ${buttonOriginalColors[buttonName].getHexString()}`);
-                }, 500);
+                }, 5000);
             }, 500);
         }
     });
